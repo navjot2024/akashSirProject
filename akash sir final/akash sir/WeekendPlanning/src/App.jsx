@@ -47,7 +47,7 @@ function App() {
                 <Route path="/polls" element={<PollsVoting currentUser={currentUser} />} />
                 <Route path="/social" element={<SocialConnections currentUser={currentUser} />} />
                 <Route path="/admin" element={<AdminDashboard currentUser={currentUser} />} />
-                <Route path="/" element={<Dashboard currentUser={currentUser} />} />
+             <Route path="/" element={<LandingPage />} />
               </Routes>
             </main>
             <Footer />
