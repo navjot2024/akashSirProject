@@ -17,7 +17,13 @@ import {
   Users,
   UtensilsCrossed,
   Zap,
-  X
+  X,
+  Bookmark,
+  Share2,
+  Award,
+  MapPin,
+  DollarSign,
+  BarChart3
 } from 'lucide-react'
 
 const categories = [
@@ -842,6 +848,236 @@ export default function ActivitySuggestions() {
 
             <ConnectedVenues />
           </section>
+
+          {/* Wishlist & Saved Items Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="rounded-[2rem] border border-white/40 bg-gradient-to-br from-white/80 via-white/60 to-[#FAF8F3]/80 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl"
+          >
+            <div className="flex items-start justify-between mb-8">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Bookmark size={20} className="text-[#0F766E]" />
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-500">Saved for Later</p>
+                </div>
+                <h3 className="text-3xl font-black text-gray-950">Your Wishlist</h3>
+                <p className="mt-2 text-sm text-gray-600">Places you've bookmarked and want to revisit</p>
+              </div>
+              <span className="inline-block px-4 py-2 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-bold text-sm">12 Saved</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { title: 'Gold-Line Vinyl Bar', status: 'Saved 2 days ago', price: '$$', rating: 4.9, distance: '1.4 km' },
+                { title: 'Bar Flores Rooftop', status: 'Saved 1 week ago', price: '$$$', rating: 4.8, distance: '2.3 km' },
+                { title: 'Hauser & Wirth Gallery', status: 'Saved 3 days ago', price: 'FREE', rating: 4.8, distance: '4.1 km' },
+                { title: 'Echo Park Lake Trail', status: 'Saved yesterday', price: 'FREE', rating: 4.7, distance: '3.2 km' }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.62 + i * 0.05 }}
+                  whileHover={{ y: -4 }}
+                  className="p-4 rounded-xl border border-gray-200 bg-white hover:shadow-md transition-all"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h4 className="font-bold text-gray-900">{item.title}</h4>
+                      <p className="text-xs text-gray-500 mt-1">{item.status}</p>
+                    </div>
+                    <Bookmark size={16} className="text-[#0F766E] fill-[#0F766E]" />
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex gap-3">
+                      <span className="text-xs font-semibold text-gray-700">{item.price}</span>
+                      <span className="text-xs font-semibold text-gray-700">★ {item.rating}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-[#0F766E] flex items-center gap-1"><MapPin size={12} /> {item.distance}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Recent Activity & Smart Recommendations */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            {/* Recent Activity Feed */}
+            <div className="rounded-[2rem] border border-white/40 bg-gradient-to-br from-white/80 via-white/60 to-[#FAF8F3]/80 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <TrendingUp size={20} className="text-blue-600" />
+                <h3 className="text-2xl font-black text-gray-950">Recent Activity</h3>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { action: 'Marcus added', venue: 'Gold-Line Vinyl Bar', time: '2 hours ago', type: 'added' },
+                  { action: 'Sarah bookmarked', venue: 'Bar Flores Rooftop', time: '5 hours ago', type: 'saved' },
+                  { action: 'Leo shared', venue: 'Echo Park Trail', time: '1 day ago', type: 'shared' },
+                  { action: 'Elena reviewed', venue: 'Sonora Taqueria', time: '2 days ago', type: 'reviewed' }
+                ].map((activity, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.72 + i * 0.05 }}
+                    className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/50 transition-colors"
+                  >
+                    <div className={`h-2 w-2 rounded-full mt-2 flex-shrink-0 ${
+                      activity.type === 'added' ? 'bg-[#0F766E]' :
+                      activity.type === 'saved' ? 'bg-blue-500' :
+                      activity.type === 'shared' ? 'bg-purple-500' :
+                      'bg-green-500'
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-900"><span className="font-semibold">{activity.action}</span> <span className="text-[#0F766E] font-semibold">{activity.venue}</span></p>
+                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <button className="w-full mt-6 p-3 rounded-full border-2 border-gray-300 text-gray-900 font-bold text-sm hover:border-[#0F766E] hover:text-[#0F766E] transition-all">
+                View All Activity
+              </button>
+            </div>
+
+            {/* Budget & Distance Filters */}
+            <div className="rounded-[2rem] border border-white/40 bg-gradient-to-br from-white/80 via-white/60 to-[#FAF8F3]/80 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <BarChart3 size={20} className="text-green-600" />
+                <h3 className="text-2xl font-black text-gray-950">Smart Filters</h3>
+              </div>
+
+              <div className="space-y-6">
+                {/* Budget Slider */}
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <label className="text-sm font-bold text-gray-900">Budget per person</label>
+                    <span className="text-sm font-bold text-[#0F766E]">$50 - $150</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: '65%' }}
+                      transition={{ duration: 1, delay: 0.75, ease: 'easeOut' }}
+                      className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600"
+                    />
+                  </div>
+                </div>
+
+                {/* Distance Slider */}
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <label className="text-sm font-bold text-gray-900">Max distance</label>
+                    <span className="text-sm font-bold text-blue-600">Within 5 km</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: '80%' }}
+                      transition={{ duration: 1, delay: 0.78, ease: 'easeOut' }}
+                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-600"
+                    />
+                  </div>
+                </div>
+
+                {/* Rating Filter */}
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <label className="text-sm font-bold text-gray-900">Minimum rating</label>
+                    <span className="text-sm font-bold text-yellow-600">4.5+ stars</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <motion.button
+                        key={star}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: star <= 4.5 ? 1 : 0.4, scale: 1 }}
+                        transition={{ delay: 0.8 + star * 0.05 }}
+                        className="text-2xl hover:scale-110 transition-transform"
+                      >
+                        {star <= 4.5 ? '⭐' : '☆'}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Activity Type */}
+                <div>
+                  <p className="text-sm font-bold text-gray-900 mb-3">Activity Type</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['Dining', 'Outdoor', 'Nightlife'].map((type, i) => (
+                      <motion.button
+                        key={type}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.82 + i * 0.05 }}
+                        className="p-2 rounded-lg bg-white border-2 border-gray-300 text-gray-900 font-bold text-xs hover:border-[#0F766E] hover:bg-[#0F766E]/5 transition-all"
+                      >
+                        {type}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9 }}
+                className="w-full mt-6 p-3 rounded-full bg-gradient-to-r from-[#0F766E] to-[#2563EB] text-white font-bold text-sm hover:shadow-lg transition-all"
+              >
+                Apply Filters
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Share & Collaboration Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="rounded-[2rem] border border-white/40 bg-gradient-to-br from-purple-50/80 to-indigo-50/80 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl"
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Share2 size={20} className="text-purple-600" />
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-600">Sharing & Collaboration</p>
+                </div>
+                <h3 className="text-2xl font-black text-gray-950">Share Plans With Friends</h3>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { icon: '📋', label: 'Share List', desc: 'Send shortlist link' },
+                { icon: '💬', label: 'Comment', desc: 'Add notes & feedback' },
+                { icon: '✅', label: 'Voting', desc: 'Let friends vote' }
+              ].map((option, i) => (
+                <motion.button
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.82 + i * 0.05 }}
+                  whileHover={{ scale: 1.05 }}
+                  className="p-4 rounded-xl bg-white hover:shadow-md transition-all text-center group"
+                >
+                  <div className="text-3xl mb-2">{option.icon}</div>
+                  <p className="font-bold text-gray-900 text-sm">{option.label}</p>
+                  <p className="text-xs text-gray-600 mt-1 group-hover:text-[#0F766E] transition-colors">{option.desc}</p>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
         </motion.div>
       </div>
 

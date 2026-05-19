@@ -1,10 +1,13 @@
-import { Calendar, Lock, Repeat2, Users, CheckCircle2, AlertCircle } from 'lucide-react'
+import { Calendar, Lock, Repeat2, Users, CheckCircle2, AlertCircle, MapPin, Clock, Cloud, Mail, Send, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 import Footer from '../components/Footer'
 
 export default function GroupScheduling() {
   const [selectedSlot, setSelectedSlot] = useState({ day: 'SAT 19', time: '20:00' })
   const [duration, setDuration] = useState('2h')
+  const [lastSync, setLastSync] = useState('2 mins ago')
+  const [planState, setPlanState] = useState('Draft')
+  const [statusMessage, setStatusMessage] = useState('Pick a slot and lock it when ready.')
   
   // Time slots and days
   const times = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00']
@@ -54,6 +57,25 @@ export default function GroupScheduling() {
 
   const confidence = selectedSlot.day === 'SAT 19' && selectedSlot.time === '20:00' ? 96 : 82
 
+  const handleResync = () => {
+    setLastSync('Just now')
+    setStatusMessage('Calendars resynced successfully.')
+  }
+
+  const handleLock = () => {
+    setPlanState('Locked')
+    setStatusMessage(`Plan locked for ${selectedSlot.day} at ${selectedSlot.time}.`)
+  }
+
+  const handleCreateEvent = () => {
+    setPlanState('Event created')
+    setStatusMessage('Event created and ready to send invites.')
+  }
+
+  const handleInvite = (label) => {
+    setStatusMessage(`${label} prepared for ${selectedSlot.day} ${selectedSlot.time}.`)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] via-[#F7F2EB] to-[#EEF3FF] text-gray-900">
       {/* Header */}
@@ -78,13 +100,14 @@ export default function GroupScheduling() {
           </div>
 
           <div className="flex gap-4 mt-6">
-            <button className="flex items-center gap-2 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <button onClick={handleResync} className="flex items-center gap-2 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
               <Repeat2 size={18} /> RESYNC CALENDARS
             </button>
-            <button className="flex items-center gap-2 px-6 py-2 bg-teal-500 text-white font-bold rounded-lg hover:bg-teal-600">
-              <Lock size={18} /> LOCK SAT 20:00
+            <button onClick={handleLock} className="flex items-center gap-2 px-6 py-2 bg-teal-500 text-white font-bold rounded-lg hover:bg-teal-600">
+              <Lock size={18} /> {planState === 'Locked' ? 'PLAN LOCKED' : 'LOCK SAT 20:00'}
             </button>
           </div>
+          <p className="mt-4 text-sm text-gray-500">{statusMessage}</p>
         </div>
       </div>
 
@@ -168,9 +191,10 @@ export default function GroupScheduling() {
                   <div className="h-full rounded-full bg-gradient-to-r from-[#0F766E] to-[#2563EB]" style={{ width: `${confidence}%` }} />
                 </div>
               </div>
-              <button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+              <button onClick={handleCreateEvent} className="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2">
                 <CheckCircle2 size={18} /> CREATE EVENT
               </button>
+              <p className="mt-3 text-xs text-gray-300">{planState}</p>
             </div>
 
             {/* Runner-up Windows */}
@@ -204,7 +228,184 @@ export default function GroupScheduling() {
         </div>
       </div>
 
-      {/* Calendar Sync Section */}
+      {/* Travel & Weather Section */}
+      <div className="mt-12 px-4 sm:px-6 lg:px-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Travel Time Estimates */}
+            <div className="rounded-[2rem] border border-white/50 bg-white/75 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <MapPin size={22} className="text-[#0F766E]" />
+                <h3 className="text-2xl font-black text-gray-900">Travel Times</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-6">Estimated travel from group members' locations (Saturday 8pm pickup)</p>
+              
+              <div className="space-y-4">
+                {[
+                  { name: 'Alex Rivera', location: 'West LA', time: '12 min', distance: '4.2 km' },
+                  { name: 'Marcus Tate', location: 'Downtown', time: '28 min', distance: '12.1 km' },
+                  { name: 'Elena Vega', location: 'Silver Lake', time: '8 min', distance: '2.3 km' },
+                  { name: 'Sami Park', location: 'Silverlake', time: '6 min', distance: '1.8 km' }
+                ].map((member, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-teal-50 to-cyan-50 hover:shadow-md transition-all">
+                    <div>
+                      <p className="font-bold text-gray-900">{member.name}</p>
+                      <p className="text-xs text-gray-600 flex items-center gap-1 mt-1"><MapPin size={12} /> {member.location}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-[#0F766E]">{member.time}</p>
+                      <p className="text-xs text-gray-600">{member.distance}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <button onClick={() => setStatusMessage('Transportation plan prepared for the selected window.')} className="w-full mt-6 p-3 rounded-full bg-gradient-to-r from-[#0F766E] to-[#2563EB] text-white font-bold text-sm hover:shadow-lg transition-all">
+                📍 Plan Group Transportation
+              </button>
+            </div>
+
+            {/* Weather Impact & Conflicts */}
+            <div className="rounded-[2rem] border border-white/50 bg-white/75 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <Cloud size={22} className="text-blue-600" />
+                <h3 className="text-2xl font-black text-gray-900">Weather & Conflicts</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">⛅</span>
+                      <div>
+                        <p className="font-bold text-gray-900">Saturday Weather</p>
+                        <p className="text-xs text-gray-600">Partly Cloudy, 68°F</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-bold text-blue-600">✓ Good</span>
+                  </div>
+                  <p className="text-xs text-gray-700">Perfect for outdoor activities. 15% chance of rain.</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">⚠️</span>
+                      <div>
+                        <p className="font-bold text-gray-900">Time Conflicts</p>
+                        <p className="text-xs text-gray-600">Saturday 8pm - 10pm</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-bold text-amber-600">1 conflict</span>
+                  </div>
+                  <p className="text-xs text-gray-700">Jordan has a work meeting until 9:30pm. Delay start or exclude from first activity.</p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200">
+                  <p className="font-bold text-gray-900 mb-2">Conflict Resolution</p>
+                  <button onClick={() => setStatusMessage('Push start to 10pm applied to the schedule.')} className="w-full mb-2 p-2 rounded-lg bg-white text-[#0F766E] font-bold text-xs hover:bg-green-100 transition-all">
+                    ✓ Push start to 10pm
+                  </button>
+                  <button onClick={() => setStatusMessage('Schedule split into two groups.')} className="w-full p-2 rounded-lg bg-white text-[#0F766E] font-bold text-xs hover:bg-green-100 transition-all">
+                    ✓ Split into two groups
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Meeting Invites & Recommendations */}
+      <div className="mt-12 px-4 sm:px-6 lg:px-10 mb-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Send Invites */}
+            <div className="rounded-[2rem] border border-white/50 bg-white/75 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <Mail size={22} className="text-purple-600" />
+                <h3 className="text-xl font-black text-gray-900">Send Invites</h3>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-6">Send calendar invites for the selected time</p>
+              
+              <button onClick={() => handleInvite('Invite to all group members')} className="w-full p-3 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold text-sm hover:shadow-lg transition-all flex items-center justify-center gap-2 mb-3">
+                <Send size={16} /> Send to All (8)
+              </button>
+              
+              <button onClick={() => handleInvite('Invite to Group A')} className="w-full p-3 rounded-full border-2 border-purple-500 text-purple-600 font-bold text-sm hover:bg-purple-50 transition-all">
+                Send to Group A (4)
+              </button>
+
+              <div className="mt-6 p-4 rounded-xl bg-purple-50">
+                <p className="text-xs font-semibold text-purple-900 mb-2">INVITE FORMAT</p>
+                <p className="text-xs text-purple-700">Calendar invite + message + Slack notification</p>
+              </div>
+            </div>
+
+            {/* Smart Recommendations */}
+            <div className="rounded-[2rem] border border-white/50 bg-white/75 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <TrendingUp size={22} className="text-[#0F766E]" />
+                <h3 className="text-xl font-black text-gray-900">AI Insights</h3>
+              </div>
+              
+              <div className="space-y-3">
+                <div className="p-3 rounded-lg bg-teal-50 border border-teal-200">
+                  <p className="text-xs font-bold text-[#0F766E]">💡 Recommendation</p>
+                  <p className="text-xs text-gray-700 mt-1">Saturday 8pm has 100% attendance rate historically</p>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+                  <p className="text-xs font-bold text-green-700">✓ Pattern Match</p>
+                  <p className="text-xs text-gray-700 mt-1">This group meets Saturdays 8 times/month</p>
+                </div>
+                
+                <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+                  <p className="text-xs font-bold text-blue-700">📊 Activity Peak</p>
+                  <p className="text-xs text-gray-700 mt-1">Weekend activity peaks Friday-Saturday</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Confidence Score */}
+            <div className="rounded-[2rem] border border-white/50 bg-gradient-to-br from-indigo-50 to-blue-50 p-8 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <Clock size={22} className="text-blue-600" />
+                <h3 className="text-xl font-black text-gray-900">Schedule Score</h3>
+              </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-bold text-gray-900">Attendance</span>
+                    <span className="text-sm font-bold text-blue-600">96%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <div className="h-full w-96 rounded-full bg-gradient-to-r from-blue-500 to-blue-600" style={{width: '96%'}}></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-bold text-gray-900">Feasibility</span>
+                    <span className="text-sm font-bold text-blue-600">89%</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600" style={{width: '89%'}}></div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-white/80 border border-blue-200">
+                  <p className="text-xs font-black text-blue-900">OVERALL SCORE</p>
+                  <p className="text-3xl font-black text-blue-600 mt-2">9.2/10</p>
+                  <p className="text-xs text-gray-600 mt-2">Highly recommended slot</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="mt-12 border-t border-white/50 bg-white/75 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-10">
           <p className="text-xs font-bold uppercase tracking-widest text-gray-700 mb-8">CALENDAR SYNC · 6 OF 8 CONNECTED</p>

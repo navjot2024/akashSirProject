@@ -1,8 +1,10 @@
-import { Bell, ChevronDown, Search, Menu, Sparkles } from 'lucide-react'
+import { Bell, ChevronDown, Search, Menu, Sparkles, LayoutDashboard, Plus, Command } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 export default function Navbar({ onMenuToggle, onLogout, currentUser }) {
+  const navigate = useNavigate()
   const [showDropdown, setShowDropdown] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
 
@@ -44,6 +46,12 @@ export default function Navbar({ onMenuToggle, onLogout, currentUser }) {
         </div>
 
         <div className="ml-auto flex items-center gap-3">
+          <button onClick={() => navigate('/activities')} className="hidden items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 transition-all hover:-translate-y-0.5 hover:shadow-md xl:inline-flex">
+            <Command size={16} /> Command
+          </button>
+          <button onClick={() => navigate('/scheduling')} className="hidden items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 transition-all hover:-translate-y-0.5 hover:shadow-md xl:inline-flex">
+            <Plus size={16} /> Quick Add
+          </button>
           <div className="relative">
             <button
               onClick={() => setShowNotifications((value) => !value)}
@@ -67,11 +75,18 @@ export default function Navbar({ onMenuToggle, onLogout, currentUser }) {
                     <span className="rounded-full bg-[#0F766E]/10 px-2 py-1 text-[11px] font-semibold text-[#0F766E]">3 new</span>
                   </div>
                   <div className="space-y-3">
-                    {notifications.map((item) => (
-                      <div key={item.title} className="rounded-2xl border border-gray-100 bg-gray-50 p-3">
+                    {notifications.map((item, index) => (
+                      <button
+                        key={item.title}
+                        onClick={() => {
+                          setShowNotifications(false)
+                          navigate(index === 0 ? '/activities' : index === 1 ? '/scheduling' : '/polls')
+                        }}
+                        className="w-full rounded-2xl border border-gray-100 bg-gray-50 p-3 text-left"
+                      >
                         <p className="text-sm font-semibold text-gray-900">{item.title}</p>
                         <p className="mt-1 text-xs leading-5 text-gray-500">{item.detail}</p>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </motion.div>
@@ -107,6 +122,12 @@ export default function Navbar({ onMenuToggle, onLogout, currentUser }) {
                     <p className="text-sm font-semibold text-gray-900">{currentUser?.name || 'Guest'}</p>
                     <p className="text-xs text-gray-500">Premium workspace</p>
                   </div>
+                  <button onClick={() => navigate('/dashboard')} className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50">
+                    <LayoutDashboard size={15} className="text-[#0F766E]" /> Workspace overview
+                  </button>
+                  <button onClick={() => navigate('/polls')} className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50">
+                    <Plus size={15} className="text-[#0F766E]" /> Create new plan
+                  </button>
                   <button onClick={onLogout} className="w-full px-4 py-3 text-left text-sm text-[#0F766E] transition-colors hover:bg-gray-50">
                     Logout
                   </button>

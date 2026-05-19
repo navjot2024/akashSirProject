@@ -1,4 +1,4 @@
-import { Heart, MapPin, MessageCircle, UserPlus, Users } from 'lucide-react'
+import { Heart, MapPin, MessageCircle, UserPlus, Users, TrendingUp, Share2, Award, Zap, CheckCircle } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 export default function SocialConnections() {
@@ -9,6 +9,8 @@ export default function SocialConnections() {
     { id: 4, name: 'Emma Roberts', bio: 'Creative planner', interests: ['Art', 'Music'], location: '2.8 km', connected: false, score: 88 }
   ])
   const [filter, setFilter] = useState('all')
+  const [notice, setNotice] = useState('Connect with people nearby to grow your planning network.')
+  const [activeChat, setActiveChat] = useState(null)
 
   const circles = [
     { id: 1, name: 'Beach Lovers', members: 12, joined: true },
@@ -24,6 +26,16 @@ export default function SocialConnections() {
 
   const handleConnect = (id) => {
     setConnections((prev) => prev.map((item) => (item.id === id ? { ...item, connected: !item.connected } : item)))
+    setNotice('Connection status updated.')
+  }
+
+  const handleMessage = (user) => {
+    setActiveChat(user.name)
+    setNotice(`Chat opened with ${user.name}.`)
+  }
+
+  const handleJoinCircle = (circleId) => {
+    setNotice('Circle membership updated.')
   }
 
   return (
@@ -82,7 +94,7 @@ export default function SocialConnections() {
                     <div className="flex gap-2">
                       {user.connected ? (
                         <>
-                          <button className="flex-1 rounded-full bg-gray-950 py-2 text-xs font-bold text-white"><MessageCircle className="mr-1 inline" size={14} /> Message</button>
+                          <button onClick={() => handleMessage(user)} className="flex-1 rounded-full bg-gray-950 py-2 text-xs font-bold text-white"><MessageCircle className="mr-1 inline" size={14} /> Message</button>
                           <button onClick={() => handleConnect(user.id)} className="rounded-full border border-gray-300 px-3 py-2 text-xs font-semibold text-gray-700">Connected</button>
                         </>
                       ) : (
@@ -114,15 +126,177 @@ export default function SocialConnections() {
                       <p className="text-sm font-semibold text-gray-900">{circle.name}</p>
                       <span className="text-xs text-gray-500">{circle.members} members</span>
                     </div>
-                    <button className={`w-full rounded-full py-2 text-xs font-bold ${circle.joined ? 'bg-gray-100 text-gray-700' : 'bg-[#0f766e] text-white'}`}>
+                    <button onClick={() => handleJoinCircle(circle.id)} className={`w-full rounded-full py-2 text-xs font-bold ${circle.joined ? 'bg-gray-100 text-gray-700' : 'bg-[#0f766e] text-white'}`}>
                       {circle.joined ? 'Member' : 'Join Circle'}
                     </button>
                   </div>
                 ))}
               </div>
-              <button className="mt-4 w-full rounded-full border border-dashed border-gray-300 py-2 text-xs font-semibold text-gray-600"><Users className="mr-1 inline" size={14} /> Discover More</button>
+              <button onClick={() => setFilter('suggested')} className="mt-4 w-full rounded-full border border-dashed border-gray-300 py-2 text-xs font-semibold text-gray-600"><Users className="mr-1 inline" size={14} /> Discover More</button>
             </div>
           </aside>
+        </section>
+
+        {/* Compatibility & Activity Suggestions */}
+        <section className="rounded-[2rem] border border-white/60 bg-gradient-to-br from-blue-50/80 to-cyan-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.06)] backdrop-blur-xl">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Zap size={20} className="text-blue-600" />
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-600">Smart Matching</p>
+              </div>
+              <h3 className="text-2xl font-black text-gray-950">Compatibility Scores</h3>
+              <p className="mt-2 text-sm text-gray-600">See how well you match with people based on interests</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { name: 'Alex Johnson', score: 92, common: ['Hiking', 'Beach', 'Photography'], mutual: 3 },
+              { name: 'Sophia Chen', score: 88, common: ['Dining', 'Art', 'Music'], mutual: 2 },
+              { name: 'Marcus Webb', score: 76, common: ['Sports', 'Gaming'], mutual: 1 },
+              { name: 'Emma Roberts', score: 85, common: ['Art', 'Music', 'Coffee'], mutual: 4 }
+            ].map((person, i) => (
+              <div key={i} className="p-4 rounded-xl bg-white hover:shadow-md transition-all">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="font-bold text-gray-900">{person.name}</p>
+                    <p className="text-xs text-gray-600 flex items-center gap-1 mt-1"><Users size={12} /> {person.mutual} mutual connections</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-blue-600">{person.score}%</div>
+                    <p className="text-xs text-gray-600">Match</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {person.common.map((interest) => (
+                    <span key={interest} className="text-xs font-semibold rounded-full bg-blue-100 text-blue-700 px-2 py-1">
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Suggested Activities Based on Interests */}
+        <section className="rounded-[2rem] border border-white/60 bg-gradient-to-br from-green-50/80 to-emerald-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.06)] backdrop-blur-xl">
+          <div className="flex items-center gap-2 mb-6">
+            <TrendingUp size={20} className="text-green-600" />
+            <h3 className="text-2xl font-black text-gray-950">Suggested Group Activities</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              { activity: 'Group Hiking', people: 5, interests: ['Outdoors', 'Beach'], next: 'Tomorrow 9am' },
+              { activity: 'Dinner Planning', people: 7, interests: ['Dining', 'Art'], next: 'Saturday 7pm' },
+              { activity: 'Game Night', people: 4, interests: ['Gaming', 'Music'], next: 'Friday 8pm' }
+            ].map((activity, i) => (
+              <div key={i} className="p-4 rounded-xl bg-white hover:shadow-md transition-all">
+                <p className="font-bold text-gray-900">{activity.activity}</p>
+                <p className="text-xs text-gray-600 mt-1 flex items-center gap-1"><Users size={12} /> {activity.people} people interested</p>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {activity.interests.map((int) => (
+                    <span key={int} className="text-xs font-semibold rounded-full bg-green-100 text-green-700 px-2 py-1">
+                      {int}
+                    </span>
+                  ))}
+                </div>
+                <button className="w-full mt-3 p-2 rounded-lg bg-green-600 text-white font-bold text-xs hover:bg-green-700 transition-colors">
+                  Join
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Network Growth & Statistics */}
+        <section className="rounded-[2rem] border border-white/60 bg-gradient-to-br from-purple-50/80 to-indigo-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.06)] backdrop-blur-xl">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp size={20} className="text-purple-600" />
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-600">Network Growth</p>
+              </div>
+              <h3 className="text-2xl font-black text-gray-950">Your Network Stats</h3>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[
+              { label: 'Total Connections', value: '24', trend: '+3 this week', icon: '👥' },
+              { label: 'Active Circles', value: '5', trend: '+1 joined', icon: '⭕' },
+              { label: 'Shared Events', value: '12', trend: '+5 this month', icon: '📅' },
+              { label: 'Network Reach', value: '142', trend: '+28 indirect', icon: '🌐' }
+            ].map((stat, i) => (
+              <div key={i} className="p-4 rounded-xl bg-white hover:shadow-md transition-all">
+                <div className="text-2xl mb-2">{stat.icon}</div>
+                <p className="text-3xl font-black text-purple-600">{stat.value}</p>
+                <p className="text-xs text-gray-600 font-semibold mt-2">{stat.label}</p>
+                <p className="text-xs text-green-600 font-bold mt-1">{stat.trend}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Group Chat Preview */}
+        <section className="rounded-[2rem] border border-white/60 bg-gradient-to-br from-pink-50/80 to-rose-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.06)] backdrop-blur-xl">
+          <div className="flex items-start justify-between mb-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <MessageCircle size={20} className="text-pink-600" />
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-600">Messaging</p>
+              </div>
+              <h3 className="text-2xl font-black text-gray-950">Group Conversations</h3>
+            </div>
+            <button className="inline-flex items-center gap-2 rounded-full bg-pink-600 px-4 py-2 text-sm font-bold text-white hover:scale-105 transition-transform">
+              <MessageCircle size={16} /> New Chat
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              { group: 'Weekend Crew', lastMsg: 'Marcus: Let\'s plan something fun', time: '2 mins ago', unread: 3 },
+              { group: 'Beach Lovers', lastMsg: 'Sarah: Thinking of going to..', time: '1 hour ago', unread: 0 },
+              { group: 'City Circle', lastMsg: 'Leo: Anyone free Friday?', time: '3 hours ago', unread: 5 }
+            ].map((chat, i) => (
+              <div key={i} className="p-3 rounded-lg bg-white hover:shadow-sm transition-all cursor-pointer flex items-center justify-between">
+                <div className="flex-1">
+                  <p className="font-bold text-gray-900">{chat.group}</p>
+                  <p className="text-sm text-gray-600 mt-1 truncate">{chat.lastMsg}</p>
+                  <p className="text-xs text-gray-500 mt-1">{chat.time}</p>
+                </div>
+                {chat.unread > 0 && (
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-pink-600 text-white text-xs font-bold">
+                    {chat.unread}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Recommendations & Actions */}
+        <section className="rounded-[2rem] border border-white/60 bg-gradient-to-br from-yellow-50/80 to-orange-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.06)] backdrop-blur-xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-gray-600 mb-6">Quick Actions</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button onClick={() => setNotice('Endorsements panel opened.')} className="p-4 rounded-xl bg-white hover:shadow-md transition-all flex items-center justify-center gap-2 group">
+              <Award size={18} className="text-yellow-600 group-hover:scale-110 transition-transform" />
+              <span className="font-bold text-gray-900">Endorsements</span>
+            </button>
+            <button onClick={() => setNotice('Invite flow opened.')} className="p-4 rounded-xl bg-white hover:shadow-md transition-all flex items-center justify-center gap-2 group">
+              <Share2 size={18} className="text-orange-600 group-hover:scale-110 transition-transform" />
+              <span className="font-bold text-gray-900">Invite Friends</span>
+            </button>
+            <button onClick={() => setNotice('Profile completion checklist opened.')} className="p-4 rounded-xl bg-white hover:shadow-md transition-all flex items-center justify-center gap-2 group">
+              <CheckCircle size={18} className="text-red-600 group-hover:scale-110 transition-transform" />
+              <span className="font-bold text-gray-900">Complete Profile</span>
+            </button>
+          </div>
+          <p className="mt-4 text-sm text-gray-600">{notice}</p>
+          {activeChat && <p className="mt-2 text-xs text-gray-500">Active chat: {activeChat}</p>}
         </section>
       </div>
     </div>

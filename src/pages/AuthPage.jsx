@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, ShieldCheck, Sparkles, Eye, EyeOff, BadgeCheck, Rocket } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -15,6 +15,8 @@ export default function AuthPage({ onLogin }) {
   const navigate = useNavigate()
   const [isSignUp, setIsSignUp] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', password: '' })
+  const [showPassword, setShowPassword] = useState(false)
+  const [accountType, setAccountType] = useState('user')
 
   const strength = useMemo(() => getPasswordStrength(formData.password), [formData.password])
   const strengthLabel = ['Weak', 'Fair', 'Good', 'Strong', 'Excellent'][strength]
@@ -24,7 +26,7 @@ export default function AuthPage({ onLogin }) {
     onLogin({
       name: formData.name || formData.email.split('@')[0],
       email: formData.email,
-      role: 'user'
+      role: accountType
     })
   }
 
@@ -73,6 +75,38 @@ export default function AuthPage({ onLogin }) {
               All sessions are encrypted and your workspace activity is protected by strict access controls.
             </p>
           </div>
+
+          <div className="rounded-[1.5rem] border border-white/70 bg-white/85 p-5">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-gray-500">
+              <BadgeCheck size={14} className="text-[#0f766e]" /> Quick access
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(false)
+                  setAccountType('user')
+                  setFormData({ name: 'Guest Planner', email: 'guest@example.com', password: 'Password123!' })
+                }}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-semibold text-gray-700"
+              >
+                Demo user
+                <span className="mt-1 block text-xs font-normal text-gray-500">Open the regular workspace</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(false)
+                  setAccountType('admin')
+                  setFormData({ name: 'Admin', email: 'admin@example.com', password: 'Password123!' })
+                }}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-left text-sm font-semibold text-gray-700"
+              >
+                Demo admin
+                <span className="mt-1 block text-xs font-normal text-gray-500">Jump into operations view</span>
+              </button>
+            </div>
+          </div>
         </aside>
 
         <section className="rounded-[2rem] border border-white/60 bg-white/85 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.12)] backdrop-blur-xl sm:p-8">
@@ -111,14 +145,23 @@ export default function AuthPage({ onLogin }) {
 
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-gray-700">Password</label>
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(event) => setFormData({ ...formData, password: event.target.value })}
-                placeholder="Enter password"
-                required
-                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition-all focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={(event) => setFormData({ ...formData, password: event.target.value })}
+                  placeholder="Enter password"
+                  required
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 pr-11 text-sm text-gray-900 outline-none transition-all focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((value) => !value)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-[#0f766e]"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
               <div className="mt-2">
                 <div className="mb-1 flex items-center justify-between text-xs">
                   <span className="text-gray-500">Password strength</span>
@@ -139,6 +182,23 @@ export default function AuthPage({ onLogin }) {
             >
               {isSignUp ? 'Create Account' : 'Sign In'}
             </button>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setAccountType('user')}
+                className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${accountType === 'user' ? 'border-[#0f766e] bg-[#0f766e]/10 text-[#0f766e]' : 'border-gray-200 bg-white text-gray-600'}`}
+              >
+                Planner account
+              </button>
+              <button
+                type="button"
+                onClick={() => setAccountType('admin')}
+                className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${accountType === 'admin' ? 'border-[#0f766e] bg-[#0f766e]/10 text-[#0f766e]' : 'border-gray-200 bg-white text-gray-600'}`}
+              >
+                Admin account
+              </button>
+            </div>
           </form>
 
           <div className="mt-6 border-t border-gray-100 pt-5 text-center text-sm text-gray-600">
@@ -151,6 +211,12 @@ export default function AuthPage({ onLogin }) {
               className="ml-2 font-bold text-[#0f766e]"
             >
               {isSignUp ? 'Sign In' : 'Create one'}
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="ml-3 font-bold text-gray-500 hover:text-gray-800"
+            >
+              Explore preview
             </button>
           </div>
         </section>

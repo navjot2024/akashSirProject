@@ -1,8 +1,13 @@
 import { motion } from 'framer-motion'
-import { Users, Clock, MapPin, Zap, TrendingUp, ArrowRight } from 'lucide-react'
-import { LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
+import { useState } from 'react'
+import { Users, Clock, MapPin, Zap, TrendingUp, ArrowRight, Cloud, Droplets, Wind, Calendar, Heart, Share2, Bell, Settings } from 'lucide-react'
+import { LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 
 export default function Dashboard({ currentUser }) {
+  const [selectedActivity, setSelectedActivity] = useState(0)
+  const [planLocked, setPlanLocked] = useState(false)
+  const [planStatus, setPlanStatus] = useState('Tap an activity card to inspect it.')
+
   // Chart data
   const activityData = [
     { name: 'Mon', value: 10 },
@@ -42,6 +47,29 @@ export default function Dashboard({ currentUser }) {
     { icon: MapPin, label: 'Shortlisted Venues', value: '07', detail: '3 within 2km' },
     { icon: Zap, label: 'Decisions Pending', value: '02', detail: 'poll closes 6pm' }
   ]
+
+  const selectedPlan = [
+    {
+      title: 'Rooftop Padel + Tacos',
+      details: 'Saturday 11:00 • Padel Haus Williamsburg',
+      note: 'Highest overlap and strongest RSVP confidence.'
+    },
+    {
+      title: 'Echo Park Art Walk',
+      details: 'Sunday 14:00 • Waiting on Leo & Sam',
+      note: 'A slower backup plan with good weather fit.'
+    }
+  ][selectedActivity]
+
+  const handleSelectActivity = (index) => {
+    setSelectedActivity(index)
+    setPlanStatus(`Selected ${index === 0 ? 'confirmed' : 'backup'} plan for review.`)
+  }
+
+  const toggleLockPlan = () => {
+    setPlanLocked((value) => !value)
+    setPlanStatus(planLocked ? 'Plan unlocked for edits.' : 'Plan locked and ready to share.')
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-gray-900">
@@ -133,7 +161,7 @@ export default function Dashboard({ currentUser }) {
                       </div>
                     ))}
                   </div>
-                  <button className="rounded-full bg-[#0F766E] px-4 py-2 text-xs font-bold text-white transition-transform hover:scale-[1.02]">
+                  <button onClick={() => handleSelectActivity(idx)} className="rounded-full bg-[#0F766E] px-4 py-2 text-xs font-bold text-white transition-transform hover:scale-[1.02]">
                     DETAILS
                   </button>
                 </div>
@@ -153,10 +181,22 @@ export default function Dashboard({ currentUser }) {
                 <h3 className="mt-2 text-2xl font-black">1-Tap Saturday Plan</h3>
                 <p className="mt-2 text-sm text-gray-300">Padel at 11:00, tacos at 13:00, rooftop at 19:30. Everyone can make it.</p>
               </div>
-              <button className="rounded-full bg-white px-5 py-2.5 text-xs font-black tracking-[0.2em] text-gray-950 transition-transform hover:scale-[1.02]">
-                LOCK PLAN
+              <button onClick={toggleLockPlan} className="rounded-full bg-white px-5 py-2.5 text-xs font-black tracking-[0.2em] text-gray-950 transition-transform hover:scale-[1.02]">
+                {planLocked ? 'UNLOCK PLAN' : 'LOCK PLAN'}
               </button>
             </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
+              <div className="rounded-2xl bg-white/10 p-4">
+                <p className="text-[11px] uppercase tracking-[0.3em] text-gray-400">Selected plan</p>
+                <p className="mt-1 text-lg font-black">{selectedPlan.title}</p>
+                <p className="mt-1 text-sm text-gray-300">{selectedPlan.details}</p>
+                <p className="mt-1 text-xs text-gray-400">{selectedPlan.note}</p>
+              </div>
+              <div className={`rounded-2xl px-4 py-3 text-center text-sm font-bold ${planLocked ? 'bg-emerald-500 text-white' : 'bg-white text-gray-950'}`}>
+                {planLocked ? 'Locked and ready' : 'Editable draft'}
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-gray-300">{planStatus}</p>
           </motion.div>
 
           {/* Key Metrics Grid */}
@@ -429,6 +469,224 @@ export default function Dashboard({ currentUser }) {
                     </div>
                   </motion.div>
                 ))}
+              </div>
+            </div>
+          </motion.div>
+          {/* Weather & Budget Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            {/* Weather Forecast */}
+            <div className="overflow-hidden rounded-[1.8rem] border border-white/40 bg-gradient-to-br from-blue-50/80 to-cyan-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-600">Weekend Forecast</p>
+                  <h3 className="mt-2 text-2xl font-black text-gray-950">Weather & Conditions</h3>
+                </div>
+                <Cloud className="text-cyan-600" size={28} />
+              </div>
+
+              <div className="space-y-3">
+                {[
+                  { day: 'Friday', temp: '72°F', condition: 'Sunny', humidity: '45%', wind: '12 mph', emoji: '☀️' },
+                  { day: 'Saturday', temp: '68°F', condition: 'Partly Cloudy', humidity: '52%', wind: '8 mph', emoji: '⛅' },
+                  { day: 'Sunday', temp: '65°F', condition: 'Rainy', humidity: '78%', wind: '15 mph', emoji: '🌧️' }
+                ].map((day, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.92 + i * 0.05 }}
+                    className="flex items-center justify-between p-3 rounded-xl bg-white/60 hover:bg-white/80 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{day.emoji}</span>
+                      <div>
+                        <p className="font-bold text-gray-900">{day.day}</p>
+                        <p className="text-xs text-gray-600">{day.condition}</p>
+                      </div>
+                    </div>
+                    <div className="text-right text-sm">
+                      <p className="font-bold text-gray-900">{day.temp}</p>
+                      <p className="text-xs text-gray-600 flex gap-2 justify-end">
+                        <span className="flex items-center gap-1"><Droplets size={12} />{day.humidity}</span>
+                        <span className="flex items-center gap-1"><Wind size={12} />{day.wind}</span>
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Budget Tracker */}
+            <div className="overflow-hidden rounded-[1.8rem] border border-white/40 bg-gradient-to-br from-green-50/80 to-emerald-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-600">Budget Tracking</p>
+                  <h3 className="mt-2 text-2xl font-black text-gray-950">Weekend Spending</h3>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold">$</div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-semibold text-gray-900">Per Person Budget</span>
+                    <span className="text-sm font-bold text-green-600">$180 / $250</span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: '72%' }}
+                      transition={{ duration: 1, delay: 0.95, ease: 'easeOut' }}
+                      className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Padel & Tacos</span>
+                    <span className="font-semibold text-gray-900">$45</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Bar/Dining</span>
+                    <span className="font-semibold text-gray-900">$75</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-700">Activities</span>
+                    <span className="font-semibold text-gray-900">$40</span>
+                  </div>
+                  <div className="flex justify-between border-t border-gray-300 pt-2 mt-2">
+                    <span className="font-bold text-gray-900">Estimated Total</span>
+                    <span className="font-bold text-green-600">$160</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Notifications & Quick Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
+            {/* Notifications */}
+            <div className="overflow-hidden rounded-[1.8rem] border border-white/40 bg-gradient-to-br from-red-50/80 to-pink-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <Bell size={20} className="text-red-600" />
+                <h3 className="text-lg font-black text-gray-950">Notifications</h3>
+              </div>
+              <div className="space-y-3">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 1.02 }}
+                  className="p-3 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer"
+                >
+                  <p className="text-xs font-semibold text-gray-900">Marcus confirmed attendance</p>
+                  <p className="text-xs text-gray-500 mt-1">5 minutes ago</p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 1.05 }}
+                  className="p-3 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer"
+                >
+                  <p className="text-xs font-semibold text-gray-900">Poll closes in 2 hours</p>
+                  <p className="text-xs text-gray-500 mt-1">Where should we go?</p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 1.08 }}
+                  className="p-3 rounded-xl bg-white/60 hover:bg-white/80 transition-all cursor-pointer"
+                >
+                  <p className="text-xs font-semibold text-gray-900">Elena suggested a new venue</p>
+                  <p className="text-xs text-gray-500 mt-1">3 minutes ago</p>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Recommendations */}
+            <div className="overflow-hidden rounded-[1.8rem] border border-white/40 bg-gradient-to-br from-purple-50/80 to-indigo-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <Zap size={20} className="text-purple-600" />
+                <h3 className="text-lg font-black text-gray-950">Recommended</h3>
+              </div>
+              <div className="space-y-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white text-xs font-bold hover:shadow-lg transition-all"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.02 }}
+                >
+                  ✓ Reserve Padel Court
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-xs font-bold hover:shadow-lg transition-all"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.05 }}
+                >
+                  → Confirm Rooftop Bar
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 text-white text-xs font-bold hover:shadow-lg transition-all"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.08 }}
+                >
+                  + Find Transportation
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="overflow-hidden rounded-[1.8rem] border border-white/40 bg-gradient-to-br from-amber-50/80 to-orange-50/80 p-6 shadow-[0_12px_40px_rgba(17,17,17,0.08)] backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <Settings size={20} className="text-amber-600" />
+                <h3 className="text-lg font-black text-gray-950">Quick Access</h3>
+              </div>
+              <div className="space-y-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 rounded-xl bg-white/60 hover:bg-white/80 text-gray-900 text-xs font-bold transition-all flex items-center justify-between"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.02 }}
+                >
+                  <span>Invite More Friends</span>
+                  <Users size={14} />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 rounded-xl bg-white/60 hover:bg-white/80 text-gray-900 text-xs font-bold transition-all flex items-center justify-between"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.05 }}
+                >
+                  <span>Share Plan</span>
+                  <Share2 size={14} />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full p-3 rounded-xl bg-white/60 hover:bg-white/80 text-gray-900 text-xs font-bold transition-all flex items-center justify-between"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.08 }}
+                >
+                  <span>Backup Options</span>
+                  <Heart size={14} />
+                </motion.button>
               </div>
             </div>
           </motion.div>

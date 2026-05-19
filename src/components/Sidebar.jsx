@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Users, MessageSquare, BarChart3, Home, Sparkles } from 'lucide-react'
+import { Calendar, MapPin, Users, MessageSquare, BarChart3, Home, Sparkles, Plus, CheckCircle2, Filter } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -17,6 +17,9 @@ export default function Sidebar({ open, currentUser }) {
   const adminItems = currentUser?.role === 'admin' ? [
     { icon: BarChart3, label: 'Admin Dashboard', path: '/admin', accent: 'from-red-500 to-rose-500' }
   ] : []
+
+  const goToPlanning = () => navigate('/scheduling')
+  const goToDiscovery = () => navigate('/activities')
 
   const currentPath = location.pathname
 
@@ -69,6 +72,22 @@ export default function Sidebar({ open, currentUser }) {
             )
           })}
 
+          <div className="px-2 pt-4">
+            <div className="rounded-[1.5rem] border border-white/60 bg-white/80 p-4 shadow-[0_12px_30px_rgba(17,17,17,0.06)] backdrop-blur-md">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gray-500">Quick Actions</p>
+              <div className="mt-3 grid gap-2">
+                <button onClick={goToPlanning} className="inline-flex items-center justify-between rounded-xl bg-[#0F766E] px-4 py-2.5 text-left text-sm font-semibold text-white">
+                  <span className="inline-flex items-center gap-2"><Plus size={14} /> New plan</span>
+                  <CheckCircle2 size={14} />
+                </button>
+                <button onClick={goToDiscovery} className="inline-flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-left text-sm font-semibold text-gray-700">
+                  <span className="inline-flex items-center gap-2"><Filter size={14} /> Smart filters</span>
+                  <span className="text-xs text-gray-500">Live</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
           {adminItems.length > 0 && (
             <div className="pt-4">
               <p className="px-2 pb-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-500">Admin</p>
@@ -108,6 +127,13 @@ export default function Sidebar({ open, currentUser }) {
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span className="flex items-center gap-1.5"><Sparkles size={12} className="text-[#0F766E]" /> 8 synced</span>
               <span>3 plans locked</span>
+            </div>
+            <div className="mt-4 rounded-xl border border-dashed border-gray-300 bg-white px-3 py-2 text-xs text-gray-600">
+              <p className="font-semibold text-gray-800">Workspace progress</p>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200">
+                <div className="h-full w-[68%] rounded-full bg-gradient-to-r from-[#0F766E] to-[#2563EB]" />
+              </div>
+              <p className="mt-2">68% setup complete</p>
             </div>
           </div>
         </div>

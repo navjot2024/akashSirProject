@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays, CheckCircle2, Compass, Sparkles, Star, Users } from 'lucide-react'
+import { ArrowRight, CalendarDays, CheckCircle2, Compass, Sparkles, Star, Users, Clock3, MapPin, Zap } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
@@ -51,6 +51,33 @@ const features = [
 export default function LandingPage() {
   const navigate = useNavigate()
   const [activeTestimonial, setActiveTestimonial] = useState(0)
+  const [activeMode, setActiveMode] = useState('weekend')
+
+  const planningModes = [
+    {
+      id: 'weekend',
+      label: 'Weekend Mode',
+      title: 'Fast, social, and low-friction',
+      detail: 'Best for dinner plans, outdoor hangs, and quick lock-ins with friends.',
+      stats: ['5 min setup', '8 people synced', '2 top picks ready']
+    },
+    {
+      id: 'travel',
+      label: 'Trip Mode',
+      title: 'Coordinate multiple days with clarity',
+      detail: 'Track availability, shared costs, and activities across a longer window.',
+      stats: ['Calendar overlap', 'Budget tracking', 'Shared itinerary']
+    },
+    {
+      id: 'events',
+      label: 'Event Mode',
+      title: 'Make one-off events easy to confirm',
+      detail: 'Collect votes, settle on timing, and export a clean plan everyone understands.',
+      stats: ['Polls + voting', 'Auto reminders', 'Fast confirmations']
+    }
+  ]
+
+  const mode = planningModes.find((item) => item.id === activeMode) || planningModes[0]
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -145,6 +172,66 @@ export default function LandingPage() {
             <p className="text-[11px] uppercase tracking-[0.3em] text-gray-400">Live sentiment</p>
             <p className="mt-2 text-2xl font-black">Friday plans are trending outdoors</p>
             <p className="mt-2 text-sm text-gray-300">Most circles in your area are choosing rooftop, picnic, and easy activity clusters.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-shell pb-6">
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="elegant-panel rounded-[2rem] p-6 sm:p-7">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-500">Planning Modes</p>
+            <h2 className="mt-2 text-3xl font-black text-gray-950">Switch the workspace to match the plan.</h2>
+            <p className="mt-3 text-sm leading-6 text-gray-600">Different weekends need different tools. Pick a mode and see the core workflow update instantly.</p>
+
+            <div className="mt-5 flex flex-wrap gap-2">
+              {planningModes.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveMode(item.id)}
+                  className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] transition-all ${activeMode === item.id ? 'bg-gray-950 text-white' : 'border border-gray-300 bg-white text-gray-600'}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-[1.5rem] bg-gray-950 p-5 text-white">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] text-gray-400">
+                <Zap size={13} /> Live preview
+              </div>
+              <h3 className="mt-2 text-2xl font-black">{mode.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-gray-300">{mode.detail}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {mode.stats.map((stat) => (
+                  <span key={stat} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-gray-200">
+                    {stat}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/60 bg-white/80 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-500">What you get</p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {[
+                { icon: Clock3, title: 'Faster decisions', detail: 'Turn open-ended plans into confirmed actions.' },
+                { icon: MapPin, title: 'Better venues', detail: 'Surface places the whole group actually likes.' },
+                { icon: Users, title: 'Shared visibility', detail: 'Everyone sees the same shortlist and status.' },
+                { icon: CalendarDays, title: 'Smarter overlap', detail: 'Find the window that fits around everyone.' }
+              ].map((item) => {
+                const Icon = item.icon
+                return (
+                  <div key={item.title} className="rounded-[1.4rem] border border-black/5 bg-[#fffdfa] p-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0f766e]/10 text-[#0f766e]">
+                      <Icon size={18} />
+                    </div>
+                    <h3 className="mt-3 text-sm font-black text-gray-950">{item.title}</h3>
+                    <p className="mt-1 text-xs leading-6 text-gray-600">{item.detail}</p>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       </section>
