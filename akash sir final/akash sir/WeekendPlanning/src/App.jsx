@@ -18,7 +18,7 @@ import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [currentUser, setCurrentUser] = useState(null)
 
